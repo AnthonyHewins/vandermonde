@@ -65,6 +65,55 @@ func TestVandermonde(t *testing.T) {
 	matrix_equality("floats_t", t, random.T(), v_rand_t)
 }
 
+func TestVandermondeWindow(t *testing.T) {
+	if _, err := VandermondeWindow([]float64{}, 0, 1, 0); err == nil {
+		t.Errorf("gave an empty matrix, got no error, but should have")
+	}
+
+	if _, err := VandermondeWindow([]float64{}, 0, 0, 0); err == nil {
+		t.Errorf("gave an invalid cutoff (< 0), got no error, but should have")
+	}
+
+	two := []float64{2}
+	for axis := 0; axis <= 1; axis++ {
+		one_half, _ := VandermondeWindow(two, -1, 1, axis)
+		one     , _ := VandermondeWindow(two,  0, 1, axis)
+		also_two, _ := VandermondeWindow(two,  1, 1, axis)
+		four    , _ := VandermondeWindow(two,  2, 1, axis)
+
+		if one_half.At(0, 0) != 0.5 { t.Errorf("vand([2], -1, 0) should be [1/2]") }
+		if one     .At(0, 0) !=   1 { t.Errorf("vand([2],  0, 0) should be [  1]") }
+		if also_two.At(0, 0) !=   2 { t.Errorf("vand([2],  1, 0) should be [  2]") }
+		if four    .At(0, 0) !=   4 { t.Errorf("vand([2],  2, 0) should be [  4]") }
+	}
+
+	_123 := []float64{1,2,3}
+	vandermonde_of_123 := mat.NewDense(3, 2, []float64{
+		1, 1,
+		1, 2,
+		1, 3,
+	})
+
+	v123, _ := VandermondeWindow(_123, 0, 2, 0)
+	matrix_equality("v123", t, vandermonde_of_123, v123)
+
+	v123_t, _ := VandermondeWindow(_123, 0, 2, 1)
+	matrix_equality("v123_t", t, vandermonde_of_123.T(), v123_t)
+
+	_537 := []float64{5,3,7}
+	longer_than_length := mat.NewDense(3, 4, []float64{
+		25, 125,  625,  3125,
+		9,   27,   81,   243,
+		49, 343, 2401, 16807,
+	})
+
+	v537, _ := VandermondeWindow(_537, 2, 4, 0)
+	matrix_equality("537", t, longer_than_length, v537)
+
+	v537_t, _ := VandermondeWindow(_537, 2, 4, 1)
+	matrix_equality("537", t, longer_than_length.T(), v537_t)
+}
+
 func matrix_equality(msg string, t *testing.T, expected, actual mat.Matrix) {
 	row_expected, col_expected := expected.Dims()
 	row_actual, col_actual := actual.Dims()
