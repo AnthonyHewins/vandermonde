@@ -1,4 +1,4 @@
-package lib
+package vandermonde
 
 import (
 	"math"

@@ -1,4 +1,4 @@
-package lib
+package vandermonde
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"math"
 )
 
+// Generate a standard Vandermonde matrix, returning a gonum Dense matrix.
+// Go here for more info: https://proofwiki.org/wiki/Definition:Vandermonde_Matrix
 func Vandermonde(x []float64, start_deg, axis int) (*mat.Dense, error) {
 	n := len(x)
 	if n == 0 { return nil, fmt.Errorf("x must have contents") }
